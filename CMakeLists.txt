@@ -18,6 +18,7 @@ endif()
 
 include(CTest)
 find_package(UnitTest++)
+find_package(Boost)
 
 macro (do_test binary)
   add_executable (test_${binary} ${binary}.cc)
@@ -38,6 +39,9 @@ add_executable(run
     int_computer.cc
     )
 target_link_libraries (run int_computer)
+target_include_directories(run PUBLIC
+    ${Boost_INCLUDE_DIRS})
+target_link_libraries (run ${Boost_LIBRARIES})
 
 if (UnitTest++_FOUND)
   # Tests here.
