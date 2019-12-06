@@ -64,6 +64,17 @@ class int_computer_state {
   public:
   using size_type = vector_type::size_type;
 
+  int_computer_state() = default;
+
+  int_computer_state(std::initializer_list<value_type> init)
+  : opcodes_(init)
+  {}
+
+  template<typename Iter>
+  int_computer_state(Iter b, Iter e)
+  : opcodes_(b, e)
+  {}
+
   auto size() const noexcept -> size_type { return opcodes_.size(); }
   auto empty() const noexcept -> bool { return opcodes_.empty(); }
 
@@ -86,7 +97,7 @@ class int_computer_state {
   void instr_mul(const std::vector<instruction::argument_type>& args);
   void instr_halt(const std::vector<instruction::argument_type>& args);
 
-  size_type pc_;
+  size_type pc_ = 0u;
   vector_type opcodes_;
 };
 

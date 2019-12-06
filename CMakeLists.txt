@@ -21,7 +21,7 @@ find_package(UnitTest++)
 
 macro (do_test binary)
   add_executable (test_${binary} ${binary}.cc)
-  target_link_libraries (test_${binary} cycle_ptr)
+  target_link_libraries (test_${binary} int_computer)
   target_link_libraries (test_${binary} UnitTest++)
   add_test (${binary} test_${binary})
 endmacro (do_test)
@@ -33,6 +33,11 @@ add_library(int_computer
 target_include_directories(int_computer PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
+
+add_executable(run
+    int_computer.cc
+    )
+target_link_libraries (run int_computer)
 
 if (UnitTest++_FOUND)
   # Tests here.
