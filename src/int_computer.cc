@@ -1,4 +1,7 @@
 #include <int_computer.hh>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/support_istream_iterator.hpp>
+#include <istream>
 
 
 bad_program_error::~bad_program_error() = default;
@@ -72,4 +75,21 @@ void int_computer_state::instr_mul(const std::vector<instruction::argument_type>
 void int_computer_state::instr_halt(
     [[maybe_unused]] const std::vector<instruction::argument_type>& args) {
   return;
+}
+
+
+auto int_computer_state::parse(std::istream& in) -> int_computer_state {
+  using namespace boost::spirit;
+
+  in.unsetf(std::ios::skipws);
+  istream_iterator begin = istream_iterator(in);
+  istream_iterator end;
+
+  qi::rule<istream_iterator, std::vector<int_computer_state::value_type>(), ascii::space_type> values =
+      qi::int_parser<int_computer_state::value_type>() % ',';
+  std::vector<int_computer_state::value_type> v;
+  if (!qi::phrase_parse(begin, end, values, ascii::space, v))
+    throw std::runtime_error("parse failed");
+
+  return int_computer_state(v.begin(), v.end());
 }

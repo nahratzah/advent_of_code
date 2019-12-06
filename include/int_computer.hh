@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstddef>
 #include <functional>
+#include <iosfwd>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -74,6 +75,8 @@ class int_computer_state {
   int_computer_state(Iter b, Iter e)
   : opcodes_(b, e)
   {}
+
+  static auto parse(std::istream& in) -> int_computer_state;
 
   auto size() const noexcept -> size_type { return opcodes_.size(); }
   auto empty() const noexcept -> bool { return opcodes_.empty(); }
