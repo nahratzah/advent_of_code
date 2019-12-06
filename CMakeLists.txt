@@ -36,7 +36,7 @@ target_include_directories(int_computer PUBLIC
     $<INSTALL_INTERFACE:include>)
 
 add_executable(run
-    int_computer.cc
+    main.cc
     )
 target_link_libraries (run int_computer)
 target_include_directories(run PUBLIC
