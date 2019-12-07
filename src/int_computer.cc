@@ -63,11 +63,13 @@ auto int_computer_state::eval1() -> int_computer_state& {
 auto int_computer_state::instructions()
 -> const std::unordered_map<opcode, instruction>& {
   static const std::unordered_map<opcode, instruction> map = {
-    { opcode::add,   instruction(3, &int_computer_state::instr_add)   },
-    { opcode::mul,   instruction(3, &int_computer_state::instr_mul)   },
-    { opcode::read,  instruction(1, &int_computer_state::instr_read)  },
-    { opcode::write, instruction(1, &int_computer_state::instr_write) },
-    { opcode::halt,  instruction(0, &int_computer_state::instr_halt)  }
+    { opcode::add,           instruction(3, &int_computer_state::instr_add)           },
+    { opcode::mul,           instruction(3, &int_computer_state::instr_mul)           },
+    { opcode::read,          instruction(1, &int_computer_state::instr_read)          },
+    { opcode::write,         instruction(1, &int_computer_state::instr_write)         },
+    { opcode::jump_if_true,  instruction(2, &int_computer_state::instr_jump_if_true)  },
+    { opcode::jump_if_false, instruction(2, &int_computer_state::instr_jump_if_false) },
+    { opcode::halt,          instruction(0, &int_computer_state::instr_halt)          }
   };
 
   return map;
@@ -100,8 +102,7 @@ void int_computer_state::instr_halt(
   return;
 }
 
-void int_computer_state::instr_read(
-    const std::vector<instruction::argument_type>& args) {
+void int_computer_state::instr_read(const std::vector<instruction::argument_type>& args) {
   const auto pos = args.at(0);
 
   if (!read_cb) throw io_error("no input");
@@ -109,13 +110,34 @@ void int_computer_state::instr_read(
   pc_ += 2u;
 }
 
-void int_computer_state::instr_write(
-    const std::vector<instruction::argument_type>& args) {
+void int_computer_state::instr_write(const std::vector<instruction::argument_type>& args) {
   const auto pos = args.at(0);
 
   if (!write_cb) throw io_error("no output");
   write_cb(get_(pos));
   pc_ += 2u;
+}
+
+void int_computer_state::instr_jump_if_true(const std::vector<instruction::argument_type>& args) {
+  const auto v = args.at(0);
+  const auto new_pc = args.at(1);
+
+  if (get_(v) != 0) {
+    pc_ = get_(new_pc);
+  } else {
+    pc_ += 3u;
+  }
+}
+
+void int_computer_state::instr_jump_if_false(const std::vector<instruction::argument_type>& args) {
+  const auto v = args.at(0);
+  const auto new_pc = args.at(1);
+
+  if (get_(v) == 0) {
+    pc_ = get_(new_pc);
+  } else {
+    pc_ += 3u;
+  }
 }
 
 auto int_computer_state::get_(instruction::argument_type iarg) const -> value_type {

@@ -43,6 +43,8 @@ enum class opcode : int {
   mul = 2,
   read = 3,
   write = 4,
+  jump_if_true = 5,
+  jump_if_false = 6,
   halt = 99
 };
 
@@ -103,8 +105,9 @@ class int_computer_state {
 
   int_computer_state() = default;
 
-  int_computer_state(std::initializer_list<value_type> init)
-  : opcodes_(init)
+  int_computer_state(std::initializer_list<value_type> init, size_type pc = 0)
+  : opcodes_(init),
+    pc_(pc)
   {}
 
   template<typename Iter>
@@ -169,6 +172,8 @@ class int_computer_state {
   void instr_halt(const std::vector<instruction::argument_type>& args);
   void instr_read(const std::vector<instruction::argument_type>& args);
   void instr_write(const std::vector<instruction::argument_type>& args);
+  void instr_jump_if_true(const std::vector<instruction::argument_type>& args);
+  void instr_jump_if_false(const std::vector<instruction::argument_type>& args);
 
   auto get_(instruction::argument_type iarg) const -> value_type;
   void set_(instruction::argument_type iarg, value_type new_value);

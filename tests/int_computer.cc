@@ -91,6 +91,26 @@ TEST(instr_write) {
   CHECK_EQUAL(17, fut.get());
 }
 
+TEST(jump_if_true) {
+  CHECK_EQUAL(
+      int_computer_state({ 1105, 0, 1, 99}, 3),
+      int_computer_state({ 1105, 0, 1, 99 }).eval1());
+
+  CHECK_EQUAL(
+      int_computer_state({ 1105, 1, 1, 99}, 1),
+      int_computer_state({ 1105, 1, 1, 99 }).eval1());
+}
+
+TEST(jump_if_false) {
+  CHECK_EQUAL(
+      int_computer_state({ 1106, 1, 1, 99}, 3),
+      int_computer_state({ 1106, 1, 1, 99 }).eval1());
+
+  CHECK_EQUAL(
+      int_computer_state({ 1106, 0, 1, 99}, 1),
+      int_computer_state({ 1106, 0, 1, 99 }).eval1());
+}
+
 int main() {
   return UnitTest::RunAllTests();
 }
