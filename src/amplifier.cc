@@ -55,3 +55,10 @@ auto amplifier_chain::operator()(value_type v) -> value_type {
   for (auto& amp : elems_) v = amp(v);
   return v;
 }
+
+auto amplifier_chain::feedback_eval(value_type v) -> value_type {
+  do {
+    v = operator()(v);
+  } while (!is_halt());
+  return v;
+}

@@ -47,11 +47,7 @@ auto find_solution(const int_computer_state& program) -> int_computer_state::val
           })
       .transform(
           [](amplifier_chain c) -> amplifier_chain::value_type {
-            amplifier_chain::value_type v = 0;
-            do {
-              v = c(v);
-            } while (!c.is_halt());
-            return v;
+            return c.feedback_eval(0);
           })
       .max()
       .value(); // derefence optional

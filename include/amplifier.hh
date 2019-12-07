@@ -62,6 +62,7 @@ class amplifier_chain {
   }
 
   auto operator()(value_type v) -> value_type;
+  auto feedback_eval(value_type v) -> value_type;
 
   auto operator|=(const amplifier& y) -> amplifier_chain& {
     elems_.emplace_back(y);

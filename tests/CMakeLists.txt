@@ -9,3 +9,4 @@ endmacro (do_test)
 
 # Tests here.
 do_test(int_computer)
+do_test(amplifier)
