@@ -1,41 +1,20 @@
 #include <amplifier.hh>
 #include <int_computer.hh>
+#include <algorithm>
 #include <array>
 #include <exception>
 #include <fstream>
-#include <iostream>
 #include <functional>
+#include <iostream>
 #include <objpipe/callback.h>
 
 
 auto all_permutations(std::function<void(std::array<int, 5>)> cb) {
-  std::array<int, 5> settings;
+  std::array<int, 5> settings = { 5, 6, 7, 8, 9 };
 
-  for (settings[0] = 5; settings[0] < 10; ++settings[0]) {
-    for (settings[1] = 5; settings[1] < 10; ++settings[1]) {
-      if (settings[1] == settings[0]) continue;
-
-      for (settings[2] = 5; settings[2] < 10; ++settings[2]) {
-        if (settings[2] == settings[0]) continue;
-        if (settings[2] == settings[1]) continue;
-
-        for (settings[3] = 5; settings[3] < 10; ++settings[3]) {
-          if (settings[3] == settings[0]) continue;
-          if (settings[3] == settings[1]) continue;
-          if (settings[3] == settings[2]) continue;
-
-          for (settings[4] = 5; settings[4] < 10; ++settings[4]) {
-            if (settings[4] == settings[0]) continue;
-            if (settings[4] == settings[1]) continue;
-            if (settings[4] == settings[2]) continue;
-            if (settings[4] == settings[3]) continue;
-
-            cb(settings);
-          }
-        }
-      }
-    }
-  }
+  do {
+    cb(settings);
+  } while (std::next_permutation(settings.begin(), settings.end()));
 }
 
 
