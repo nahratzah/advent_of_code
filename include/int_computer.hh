@@ -94,6 +94,12 @@ class instruction {
 
 class int_computer_state {
   public:
+  enum class io_pending {
+    halt,
+    read,
+    write
+  };
+
   using opcode_type = std::underlying_type_t<opcode>;
   using value_type = std::common_type_t<opcode_type, instruction::argument_value>;
 
@@ -141,11 +147,12 @@ class int_computer_state {
   auto is_halt() const -> bool {
     if (empty()) throw bad_program_error("empty program");
     assert(pc_ < opcodes_.size());
-    return opcode(opcodes_[pc_]) == opcode::halt;
+    return as_opcode(opcodes_[pc_]) == opcode::halt;
   }
 
   auto eval_and_get() -> value_type;
   auto eval() -> int_computer_state&;
+  auto eval_until_io_or_halt() -> io_pending;
   auto eval1() -> int_computer_state&;
 
   static auto instructions() -> const std::unordered_map<opcode, instruction>&;

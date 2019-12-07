@@ -21,6 +21,25 @@ auto int_computer_state::eval() -> int_computer_state& {
   return *this;
 }
 
+auto int_computer_state::eval_until_io_or_halt() -> io_pending {
+  if (empty()) throw bad_program_error("empty program");
+
+  for (;;) {
+    assert(pc_ < opcodes_.size());
+    switch (as_opcode(opcodes_[pc_])) {
+      default:
+        eval1();
+        break;
+      case opcode::halt:
+        return io_pending::halt;
+      case opcode::read:
+        return io_pending::read;
+      case opcode::write:
+        return io_pending::write;
+    }
+  }
+}
+
 auto int_computer_state::eval1() -> int_computer_state& {
   if (empty()) throw bad_program_error("empty program");
   assert(pc_ < opcodes_.size());

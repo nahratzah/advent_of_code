@@ -20,6 +20,7 @@ find_package(UnitTest++)
 find_package(Boost)
 
 add_library(int_computer
+    src/amplifier.cc
     src/int_computer.cc
     )
 
