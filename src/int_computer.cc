@@ -144,6 +144,7 @@ void int_computer_state::set_(instruction::argument_type iarg, value_type new_va
 
 auto int_computer_state::parse(std::istream& in) -> int_computer_state {
   using namespace boost::spirit;
+  int_computer_state result;
 
   in.unsetf(std::ios::skipws);
   istream_iterator begin = istream_iterator(in);
@@ -151,9 +152,8 @@ auto int_computer_state::parse(std::istream& in) -> int_computer_state {
 
   qi::rule<istream_iterator, std::vector<int_computer_state::value_type>(), ascii::space_type> values =
       qi::int_parser<int_computer_state::value_type>() % ',';
-  std::vector<int_computer_state::value_type> v;
-  if (!qi::phrase_parse(begin, end, values, ascii::space, v))
+  if (!qi::phrase_parse(begin, end, values, ascii::space, result.opcodes_))
     throw std::runtime_error("parse failed");
 
-  return int_computer_state(v.begin(), v.end());
+  return result;
 }
