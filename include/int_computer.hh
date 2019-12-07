@@ -28,9 +28,20 @@ class invalid_opcode_error
   ~invalid_opcode_error();
 };
 
+class io_error
+: public std::runtime_error
+{
+  public:
+  using std::runtime_error::runtime_error;
+
+  ~io_error();
+};
+
 enum class opcode : int {
   add = 1,
   mul = 2,
+  read = 3,
+  write = 4,
   halt = 99
 };
 
@@ -133,9 +144,15 @@ class int_computer_state {
   void instr_add(const std::vector<instruction::argument_type>& args);
   void instr_mul(const std::vector<instruction::argument_type>& args);
   void instr_halt(const std::vector<instruction::argument_type>& args);
+  void instr_read(const std::vector<instruction::argument_type>& args);
+  void instr_write(const std::vector<instruction::argument_type>& args);
 
   size_type pc_ = 0u;
   vector_type opcodes_;
+
+  public:
+  std::function<value_type()> read_cb;
+  std::function<void(value_type)> write_cb;
 };
 
 

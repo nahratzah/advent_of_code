@@ -1,5 +1,6 @@
 #include <int_computer.hh>
 #include "UnitTest++/UnitTest++.h"
+#include <future>
 
 
 TEST(parse) {
@@ -61,6 +62,33 @@ TEST(instr_mul) {
   CHECK_EQUAL(
       1452,
       int_computer_state({ 2, 6, 5, 0, 99, 44, 33 }).eval_and_get());
+}
+
+TEST(instr_read) {
+  int_computer_state ic = { 3, 0, 99 };
+  int called = 0;
+  ic.read_cb = [&called]() -> int_computer_state::value_type {
+    ++called;
+    return 17;
+  };
+
+  CHECK_EQUAL(
+      17,
+      ic.eval_and_get());
+  CHECK_EQUAL(1, called); // Callback must be invoked exactly once.
+}
+
+TEST(instr_write) {
+  int_computer_state ic = { 4, 3, 99, 17 };
+  // Set up the write callback.
+  // We use a promise as that enforces a single call.
+  std::future<int_computer_state::value_type> fut;
+  std::promise<int_computer_state::value_type> prom;
+  fut = prom.get_future();
+  ic.write_cb = [&prom](int_computer_state::value_type v) { prom.set_value(v); };
+
+  ic.eval();
+  CHECK_EQUAL(17, fut.get());
 }
 
 int main() {

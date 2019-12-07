@@ -8,6 +8,8 @@ bad_program_error::~bad_program_error() = default;
 
 invalid_opcode_error::~invalid_opcode_error() = default;
 
+io_error::~io_error() = default;
+
 
 auto int_computer_state::eval_and_get() -> value_type {
   return eval().opcodes_[0];
@@ -42,9 +44,11 @@ auto int_computer_state::eval1() -> int_computer_state& {
 auto int_computer_state::instructions()
 -> const std::unordered_map<opcode, instruction>& {
   static const std::unordered_map<opcode, instruction> map = {
-    { opcode::add,  instruction(3, &int_computer_state::instr_add)  },
-    { opcode::mul,  instruction(3, &int_computer_state::instr_mul)  },
-    { opcode::halt, instruction(0, &int_computer_state::instr_halt) }
+    { opcode::add,   instruction(3, &int_computer_state::instr_add)   },
+    { opcode::mul,   instruction(3, &int_computer_state::instr_mul)   },
+    { opcode::read,  instruction(1, &int_computer_state::instr_read)  },
+    { opcode::write, instruction(1, &int_computer_state::instr_write) },
+    { opcode::halt,  instruction(0, &int_computer_state::instr_halt)  }
   };
 
   return map;
@@ -75,6 +79,24 @@ void int_computer_state::instr_mul(const std::vector<instruction::argument_type>
 void int_computer_state::instr_halt(
     [[maybe_unused]] const std::vector<instruction::argument_type>& args) {
   return;
+}
+
+void int_computer_state::instr_read(
+    const std::vector<instruction::argument_type>& args) {
+  const auto pos = args.at(0);
+
+  if (!read_cb) throw io_error("no input");
+  opcodes_.at(pos) = read_cb();
+  pc_ += 2u;
+}
+
+void int_computer_state::instr_write(
+    const std::vector<instruction::argument_type>& args) {
+  const auto pos = args.at(0);
+
+  if (!write_cb) throw io_error("no output");
+  write_cb(opcodes_.at(pos));
+  pc_ += 2u;
 }
 
 
