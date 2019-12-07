@@ -64,6 +64,8 @@ class int_computer_state {
 
   public:
   using size_type = vector_type::size_type;
+  using iterator = vector_type::iterator;
+  using const_iterator = vector_type::const_iterator;
 
   int_computer_state() = default;
 
@@ -80,6 +82,22 @@ class int_computer_state {
 
   auto size() const noexcept -> size_type { return opcodes_.size(); }
   auto empty() const noexcept -> bool { return opcodes_.empty(); }
+  auto begin() -> iterator { return opcodes_.begin(); }
+  auto end() -> iterator { return opcodes_.end(); }
+  auto begin() const -> const_iterator { return opcodes_.begin(); }
+  auto end() const -> const_iterator { return opcodes_.end(); }
+  auto cbegin() const -> const_iterator { return opcodes_.cbegin(); }
+  auto cend() const -> const_iterator { return opcodes_.cend(); }
+
+  auto operator[](size_type idx) -> value_type& {
+    assert(idx < size());
+    return opcodes_[idx];
+  }
+
+  auto operator[](size_type idx) const -> const value_type& {
+    assert(idx < size());
+    return opcodes_[idx];
+  }
 
   auto is_halt() const -> bool {
     if (empty()) throw bad_program_error("empty program");

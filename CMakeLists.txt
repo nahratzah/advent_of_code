@@ -29,11 +29,13 @@ target_include_directories(int_computer PUBLIC
 target_include_directories(int_computer PUBLIC
     ${Boost_INCLUDE_DIRS})
 
-add_executable(run
-    main.cc
-    )
-target_link_libraries (run int_computer)
-target_link_libraries (run ${Boost_LIBRARIES})
+macro (do_executable day part)
+  add_executable (day${day}_part${part} day${day}_part${part}.cc)
+  target_link_libraries (day${day}_part${part} PUBLIC int_computer ${BOOST_LIBRARIES})
+endmacro (do_executable)
+
+do_executable(2 1)
+do_executable(2 2)
 
 if (UnitTest++_FOUND)
   add_subdirectory (tests)
