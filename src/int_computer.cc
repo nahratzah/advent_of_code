@@ -77,6 +77,27 @@ auto int_computer_state::instructions()
   return map;
 }
 
+auto int_computer_state::single_input_single_output(int_computer_state s, value_type in) -> value_type {
+  bool out_called = false;
+  bool in_called = false;
+  value_type out;
+
+  s.read_cb = [&in, &in_called]() {
+    if (in_called) throw io_error("too many input values");
+    in_called = true;
+    return in;
+  };
+  s.write_cb = [&out, &out_called](value_type v) {
+    if (out_called) throw io_error("too many output values");
+    out_called = true;
+    out = v;
+  };
+  s.eval();
+
+  if (!out_called) throw io_error("no output value");
+  return out;
+}
+
 auto int_computer_state::operator==(const int_computer_state& y) const noexcept -> bool {
   return pc_ == y.pc_ && opcodes_ == y.opcodes_;
 }

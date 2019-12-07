@@ -139,6 +139,38 @@ TEST(instr_equals) {
       int_computer_state({ 1108, 23, 23, 3 }).eval1());
 }
 
+TEST(day5_part2_example_pos_mode_eq_8) {
+  for (int x = 0; x < 100; ++x) {
+    CHECK_EQUAL(
+        x == 8 ? 1 : 0,
+        int_computer_state::single_input_single_output({3,9,8,9,10,9,4,9,99,-1,8}, x));
+  }
+}
+
+TEST(day5_part2_example_pos_mode_lt_8) {
+  for (int x = 0; x < 100; ++x) {
+    CHECK_EQUAL(
+        x < 8 ? 1 : 0,
+        int_computer_state::single_input_single_output({3,9,7,9,10,9,4,9,99,-1,8}, x));
+  }
+}
+
+TEST(day5_part2_example_imm_mode_eq_8) {
+  for (int x = 0; x < 100; ++x) {
+    CHECK_EQUAL(
+        x == 8 ? 1 : 0,
+        int_computer_state::single_input_single_output({3,3,1108,-1,8,3,4,3,99}, x));
+  }
+}
+
+TEST(day5_part2_example_imm_mode_lt_8) {
+  for (int x = 0; x < 100; ++x) {
+    CHECK_EQUAL(
+        x < 8 ? 1 : 0,
+        int_computer_state::single_input_single_output({3,3,1107,-1,8,3,4,3,99}, x));
+  }
+}
+
 int main() {
   return UnitTest::RunAllTests();
 }
