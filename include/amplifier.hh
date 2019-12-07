@@ -24,14 +24,6 @@ class amplifier {
     return s_.is_halt();
   }
 
-  explicit operator bool() const noexcept {
-    return !empty() && !is_halt();
-  }
-
-  auto operator!() const noexcept -> bool {
-    return empty() || is_halt();
-  }
-
   auto operator()(value_type v) -> value_type;
 
   private:
