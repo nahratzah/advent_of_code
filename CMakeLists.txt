@@ -18,6 +18,7 @@ endif()
 
 find_package(UnitTest++)
 find_package(Boost)
+add_subdirectory(contrib/objpipe)
 
 add_library(int_computer
     src/amplifier.cc
@@ -39,6 +40,8 @@ do_executable(2 1)
 do_executable(2 2)
 do_executable(5 1)
 do_executable(7 1)
+do_executable(7 2)
+target_link_libraries (day7_part2 PUBLIC objpipe)
 
 if (UnitTest++_FOUND)
   add_subdirectory (tests)
