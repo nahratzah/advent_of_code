@@ -6,6 +6,7 @@
 #include <functional>
 #include <iosfwd>
 #include <stdexcept>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 
@@ -45,12 +46,18 @@ enum class opcode : int {
   halt = 99
 };
 
+enum class addressing_mode : uint8_t {
+  position = 0,
+  immediate = 1
+};
+
 class int_computer_state;
 
 
 class instruction {
   public:
-  using argument_type = int;
+  using argument_value = int;
+  using argument_type = std::tuple<addressing_mode, argument_value>;
   using eval_fn = std::function<void(int_computer_state&, const std::vector<argument_type>&)>;
 
   instruction() = default;
@@ -68,7 +75,7 @@ class instruction {
 class int_computer_state {
   public:
   using opcode_type = std::underlying_type_t<opcode>;
-  using value_type = std::common_type_t<opcode_type, instruction::argument_type>;
+  using value_type = std::common_type_t<opcode_type, instruction::argument_value>;
 
   private:
   using vector_type = std::vector<value_type>;
@@ -146,6 +153,27 @@ class int_computer_state {
   void instr_halt(const std::vector<instruction::argument_type>& args);
   void instr_read(const std::vector<instruction::argument_type>& args);
   void instr_write(const std::vector<instruction::argument_type>& args);
+
+  auto get_(instruction::argument_type iarg) const -> value_type;
+  void set_(instruction::argument_type iarg, value_type new_value);
+
+  static constexpr auto as_opcode(value_type v) -> opcode {
+    return opcode(v % 100);
+  }
+
+  static constexpr auto as_modifiers(value_type v) -> value_type {
+    return v / 100;
+  }
+
+  static constexpr auto get_modifier(value_type v) -> addressing_mode {
+    if (v % 10 != 0 && v % 10 != 1)
+      throw invalid_opcode_error("invalid addressing mode");
+    return addressing_mode(v % 10);
+  }
+
+  static constexpr auto shift_modifier(value_type v) -> value_type {
+    return v / 10;
+  }
 
   size_type pc_ = 0u;
   vector_type opcodes_;

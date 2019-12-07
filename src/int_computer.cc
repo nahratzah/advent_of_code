@@ -25,8 +25,10 @@ auto int_computer_state::eval1() -> int_computer_state& {
   if (empty()) throw bad_program_error("empty program");
   assert(pc_ < opcodes_.size());
 
+  const auto opcode_with_modifiers = opcodes_[pc_];
+
   const auto& instr_map = instructions();
-  const auto instr_iter = instr_map.find(opcode(opcodes_[pc_]));
+  const auto instr_iter = instr_map.find(as_opcode(opcode_with_modifiers));
   if (instr_iter == instr_map.end())
     throw invalid_opcode_error("bad opcode");
   const auto& instr = instr_iter->second;
@@ -37,7 +39,24 @@ auto int_computer_state::eval1() -> int_computer_state& {
   if (arg_end > opcodes_.end())
     throw std::range_error("insufficient arguments");
 
-  instr_iter->second.eval(*this, std::vector<instruction::argument_type>(arg_start, arg_end));
+  // Load argument vector.
+  std::vector<instruction::argument_type> iargs;
+  iargs.reserve(instr.arguments);
+  std::transform(arg_start, arg_end, std::back_inserter(iargs),
+      [](const value_type& v) -> instruction::argument_type {
+        return std::make_tuple(addressing_mode::position, v);
+      });
+
+  // Apply addressing mode to argument vector.
+  auto modifiers = as_modifiers(opcode_with_modifiers);
+  for (auto& iarg : iargs) {
+    std::get<addressing_mode>(iarg) = get_modifier(modifiers);
+    modifiers = shift_modifier(modifiers);
+  }
+  if (modifiers != 0)
+    throw invalid_opcode_error("too many opcode modifiers");
+
+  instr_iter->second.eval(*this, std::move(iargs));
   return *this;
 }
 
@@ -63,7 +82,7 @@ void int_computer_state::instr_add(const std::vector<instruction::argument_type>
   const auto in1 = args[1];
   const auto out = args[2];
 
-  opcodes_.at(out) = opcodes_.at(in0) + opcodes_.at(in1);
+  set_(out, get_(in0) + get_(in1));
   pc_ += 4u;
 }
 
@@ -72,7 +91,7 @@ void int_computer_state::instr_mul(const std::vector<instruction::argument_type>
   const auto in1 = args[1];
   const auto out = args[2];
 
-  opcodes_.at(out) = opcodes_.at(in0) * opcodes_.at(in1);
+  set_(out, get_(in0) * get_(in1));
   pc_ += 4u;
 }
 
@@ -86,7 +105,7 @@ void int_computer_state::instr_read(
   const auto pos = args.at(0);
 
   if (!read_cb) throw io_error("no input");
-  opcodes_.at(pos) = read_cb();
+  set_(pos, read_cb());
   pc_ += 2u;
 }
 
@@ -95,8 +114,31 @@ void int_computer_state::instr_write(
   const auto pos = args.at(0);
 
   if (!write_cb) throw io_error("no output");
-  write_cb(opcodes_.at(pos));
+  write_cb(get_(pos));
   pc_ += 2u;
+}
+
+auto int_computer_state::get_(instruction::argument_type iarg) const -> value_type {
+  const auto v = std::get<instruction::argument_value>(iarg);
+
+  switch (std::get<addressing_mode>(iarg)) {
+    case addressing_mode::position:
+      return opcodes_.at(v);
+    case addressing_mode::immediate:
+      return v;
+  }
+}
+
+void int_computer_state::set_(instruction::argument_type iarg, value_type new_value) {
+  const auto v = std::get<instruction::argument_value>(iarg);
+
+  switch (std::get<addressing_mode>(iarg)) {
+    case addressing_mode::position:
+      opcodes_.at(v) = new_value;
+      break;
+    case addressing_mode::immediate:
+      throw invalid_opcode_error("cannot assign to a immediate value");
+  }
 }
 
 
