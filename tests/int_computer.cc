@@ -1,0 +1,68 @@
+#include <int_computer.hh>
+#include "UnitTest++/UnitTest++.h"
+
+
+TEST(parse) {
+  auto in = std::istringstream("1,9,10,3,2,3,11,0,99,30,40,50");
+
+  CHECK_EQUAL(
+      int_computer_state({ 1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50 }),
+      int_computer_state::parse(in));
+}
+
+TEST(parse_accepts_spaces) {
+  auto in = std::istringstream("1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50");
+
+  CHECK_EQUAL(
+      int_computer_state({ 1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50 }),
+      int_computer_state::parse(in));
+}
+
+TEST(parse_accepts_newlines) {
+  auto in = std::istringstream("1,\n9,\n10,\n3,\n2,\n3,\n11,\n0,\n99,\n30,\n40,\n50\n");
+
+  CHECK_EQUAL(
+      int_computer_state({ 1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50 }),
+      int_computer_state::parse(in));
+}
+
+TEST(eval_result) {
+  CHECK_EQUAL(
+      99,
+      int_computer_state({ 99 }).eval_and_get());
+  CHECK_EQUAL(
+      3500,
+      int_computer_state({ 1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50 }).eval_and_get());
+}
+
+TEST(empty) {
+  CHECK(int_computer_state().empty());
+  CHECK(!int_computer_state({99}).empty());
+}
+
+TEST(is_halt) {
+  CHECK(int_computer_state({99}).is_halt());
+  CHECK(!int_computer_state({1, 0, 0, 0, 99}).is_halt());
+}
+
+TEST(instr_add) {
+  CHECK_EQUAL(
+      3,
+      int_computer_state({ 1, 0, 2, 0, 99 }).eval_and_get());
+  CHECK_EQUAL(
+      77,
+      int_computer_state({ 1, 6, 5, 0, 99, 44, 33 }).eval_and_get());
+}
+
+TEST(instr_mul) {
+  CHECK_EQUAL(
+      4,
+      int_computer_state({ 2, 0, 2, 0, 99 }).eval_and_get());
+  CHECK_EQUAL(
+      1452,
+      int_computer_state({ 2, 6, 5, 0, 99, 44, 33 }).eval_and_get());
+}
+
+int main() {
+  return UnitTest::RunAllTests();
+}

@@ -95,6 +95,22 @@ class int_computer_state {
 
   auto operator==(const int_computer_state& y) const noexcept -> bool;
 
+  template<typename CharT, typename Traits>
+  friend auto operator<<(std::basic_ostream<CharT, Traits>& out, const int_computer_state& s) -> std::basic_ostream<CharT, Traits>& {
+    bool precede_comma = false;
+    if (s.pc_ != 0) {
+      out << "pc=" << s.pc_;
+      precede_comma = true;
+    }
+
+    for (const auto& i : s.opcodes_) {
+      if (precede_comma) out << ", ";
+      out << i;
+      precede_comma = true;
+    }
+    return out;
+  }
+
   private:
   void instr_add(const std::vector<instruction::argument_type>& args);
   void instr_mul(const std::vector<instruction::argument_type>& args);
