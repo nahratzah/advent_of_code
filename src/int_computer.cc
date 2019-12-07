@@ -78,14 +78,17 @@ auto int_computer_state::instructions()
 }
 
 auto int_computer_state::single_input_single_output(int_computer_state s, value_type in) -> value_type {
-  bool out_called = false;
-  bool in_called = false;
-  value_type out;
+  return single_output(std::move(s), { in });
+}
 
-  s.read_cb = [&in, &in_called]() {
-    if (in_called) throw io_error("too many input values");
-    in_called = true;
-    return in;
+auto int_computer_state::single_output(int_computer_state s, std::vector<value_type> in) -> value_type {
+  bool out_called = false;
+  value_type out;
+  auto in_iter = in.begin();
+
+  s.read_cb = [&in, &in_iter]() {
+    if (in_iter == in.end()) throw io_error("too many input values");
+    return *in_iter++;
   };
   s.write_cb = [&out, &out_called](value_type v) {
     if (out_called) throw io_error("too many output values");

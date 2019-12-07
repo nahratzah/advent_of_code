@@ -151,6 +151,7 @@ class int_computer_state {
   static auto instructions() -> const std::unordered_map<opcode, instruction>&;
 
   static auto single_input_single_output(int_computer_state s, value_type in) -> value_type;
+  static auto single_output(int_computer_state s, std::vector<value_type> in) -> value_type;
 
   auto operator==(const int_computer_state& y) const noexcept -> bool;
 

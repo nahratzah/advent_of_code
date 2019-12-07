@@ -37,6 +37,7 @@ endmacro (do_executable)
 do_executable(2 1)
 do_executable(2 2)
 do_executable(5 1)
+do_executable(7 1)
 
 if (UnitTest++_FOUND)
   add_subdirectory (tests)
