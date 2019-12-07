@@ -45,6 +45,8 @@ enum class opcode : int {
   write = 4,
   jump_if_true = 5,
   jump_if_false = 6,
+  less_than = 7,
+  equals = 8,
   halt = 99
 };
 
@@ -174,6 +176,8 @@ class int_computer_state {
   void instr_write(const std::vector<instruction::argument_type>& args);
   void instr_jump_if_true(const std::vector<instruction::argument_type>& args);
   void instr_jump_if_false(const std::vector<instruction::argument_type>& args);
+  void instr_less_than(const std::vector<instruction::argument_type>& args);
+  void instr_equals(const std::vector<instruction::argument_type>& args);
 
   auto get_(instruction::argument_type iarg) const -> value_type;
   void set_(instruction::argument_type iarg, value_type new_value);

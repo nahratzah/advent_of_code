@@ -91,24 +91,52 @@ TEST(instr_write) {
   CHECK_EQUAL(17, fut.get());
 }
 
-TEST(jump_if_true) {
+TEST(instr_jump_if_true) {
   CHECK_EQUAL(
-      int_computer_state({ 1105, 0, 1, 99}, 3),
+      int_computer_state({ 1105, 0, 1, 99 }, 3),
       int_computer_state({ 1105, 0, 1, 99 }).eval1());
 
   CHECK_EQUAL(
-      int_computer_state({ 1105, 1, 1, 99}, 1),
+      int_computer_state({ 1105, 1, 1, 99 }, 1),
       int_computer_state({ 1105, 1, 1, 99 }).eval1());
 }
 
-TEST(jump_if_false) {
+TEST(instr_jump_if_false) {
   CHECK_EQUAL(
-      int_computer_state({ 1106, 1, 1, 99}, 3),
+      int_computer_state({ 1106, 1, 1, 99 }, 3),
       int_computer_state({ 1106, 1, 1, 99 }).eval1());
 
   CHECK_EQUAL(
-      int_computer_state({ 1106, 0, 1, 99}, 1),
+      int_computer_state({ 1106, 0, 1, 99 }, 1),
       int_computer_state({ 1106, 0, 1, 99 }).eval1());
+}
+
+TEST(instr_less_than) {
+  CHECK_EQUAL(
+      int_computer_state({ 1107, 0, 1, 1 }, 4),
+      int_computer_state({ 1107, 0, 1, 3 }).eval1());
+
+  CHECK_EQUAL(
+      int_computer_state({ 1107, 19, 18, 0 }, 4),
+      int_computer_state({ 1107, 19, 18, 3 }).eval1());
+
+  CHECK_EQUAL(
+      int_computer_state({ 1107, 23, 23, 0 }, 4),
+      int_computer_state({ 1107, 23, 23, 3 }).eval1());
+}
+
+TEST(instr_equals) {
+  CHECK_EQUAL(
+      int_computer_state({ 1108, 0, 1, 0 }, 4),
+      int_computer_state({ 1108, 0, 1, 3 }).eval1());
+
+  CHECK_EQUAL(
+      int_computer_state({ 1108, 19, 18, 0 }, 4),
+      int_computer_state({ 1108, 19, 18, 3 }).eval1());
+
+  CHECK_EQUAL(
+      int_computer_state({ 1108, 23, 23, 1 }, 4),
+      int_computer_state({ 1108, 23, 23, 3 }).eval1());
 }
 
 int main() {

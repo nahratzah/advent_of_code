@@ -69,6 +69,8 @@ auto int_computer_state::instructions()
     { opcode::write,         instruction(1, &int_computer_state::instr_write)         },
     { opcode::jump_if_true,  instruction(2, &int_computer_state::instr_jump_if_true)  },
     { opcode::jump_if_false, instruction(2, &int_computer_state::instr_jump_if_false) },
+    { opcode::less_than,     instruction(3, &int_computer_state::instr_less_than)     },
+    { opcode::equals,        instruction(3, &int_computer_state::instr_equals)        },
     { opcode::halt,          instruction(0, &int_computer_state::instr_halt)          }
   };
 
@@ -138,6 +140,24 @@ void int_computer_state::instr_jump_if_false(const std::vector<instruction::argu
   } else {
     pc_ += 3u;
   }
+}
+
+void int_computer_state::instr_less_than(const std::vector<instruction::argument_type>& args) {
+  const auto x = args.at(0);
+  const auto y = args.at(1);
+  const auto out = args.at(2);
+
+  set_(out, get_(x) < get_(y) ? 1 : 0);
+  pc_ += 4u;
+}
+
+void int_computer_state::instr_equals(const std::vector<instruction::argument_type>& args) {
+  const auto x = args.at(0);
+  const auto y = args.at(1);
+  const auto out = args.at(2);
+
+  set_(out, get_(x) == get_(y) ? 1 : 0);
+  pc_ += 4u;
 }
 
 auto int_computer_state::get_(instruction::argument_type iarg) const -> value_type {
