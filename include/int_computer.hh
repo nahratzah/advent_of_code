@@ -51,6 +51,22 @@ enum class addressing_mode : uint8_t {
   immediate = 1
 };
 
+template<typename CharT, typename Traits>
+auto operator<<(std::basic_ostream<CharT, Traits>& out, addressing_mode m) -> std::basic_ostream<CharT, Traits>& {
+  switch (m) {
+  default:
+    out << "addressing_mode[" << std::uint32_t(static_cast<std::underlying_type_t<addressing_mode>>(m)) << "]";
+    break;
+  case addressing_mode::position:
+    out << "position";
+    break;
+  case addressing_mode::immediate:
+    out << "immediate";
+    break;
+  }
+  return out;
+}
+
 class int_computer_state;
 
 
