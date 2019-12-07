@@ -34,13 +34,13 @@ add_library(int_computer
 target_include_directories(int_computer PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
+target_include_directories(int_computer PUBLIC
+    ${Boost_INCLUDE_DIRS})
 
 add_executable(run
     main.cc
     )
 target_link_libraries (run int_computer)
-target_include_directories(run PUBLIC
-    ${Boost_INCLUDE_DIRS})
 target_link_libraries (run ${Boost_LIBRARIES})
 
 if (UnitTest++_FOUND)
