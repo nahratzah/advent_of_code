@@ -23,6 +23,7 @@ add_subdirectory(contrib/objpipe)
 add_library(int_computer
     src/amplifier.cc
     src/int_computer.cc
+    src/orbit_map.cc
     )
 
 target_include_directories(int_computer PUBLIC
@@ -39,6 +40,8 @@ endmacro (do_executable)
 do_executable(2 1)
 do_executable(2 2)
 do_executable(5 1)
+do_executable(6 1)
+target_link_libraries (day6_part1 PUBLIC objpipe)
 do_executable(7 1)
 do_executable(7 2)
 target_link_libraries (day7_part2 PUBLIC objpipe)
